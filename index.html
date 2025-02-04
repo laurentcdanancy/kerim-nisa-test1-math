@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Calcul Mental</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+            margin: 0;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .carousel {
+            width: 100px;
+            height: 100px;
+            overflow: hidden;
+            position: relative;
+        }
+        .carousel img {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: opacity 0.5s ease;
+            opacity: 0;
+        }
+        .carousel img.active {
+            opacity: 1;
+        }
+        .question {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+        input {
+            padding: 5px;
+            font-size: 1em;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+        #timer {
+            font-size: 1.5em;
+            color: red;
+            margin-top: 10px;
+        }
+        #notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #007bff;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        footer {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="notification"></div>
+    <header>
+        <div>
+            <p>Kerim</p>
+            <div class="carousel" id="kerim-carousel">
+                <img src="kerim1.jpg" class="active" alt="Kerim 1">
+                <img src="kerim2.jpg" alt="Kerim 2">
+                <img src="kerim3.jpg" alt="Kerim 3">
+            </div>
+        </div>
+        <h1>Salut les Fous</h1>
+        <h1> Bonne Chance </h1>
+        <div>
+            <p>Nisa</p>
+            <div class="carousel" id="nisa-carousel">
+                <img src="nisa1.jpg" class="active" alt="Nisa 1">
+                <img src="nisa2.jpg" alt="Nisa 2">
+                <img src="nisa3.jpg" alt="Nisa 3">
+            </div>
+        </div>
+    </header>
+    
+    <h1>Test de Calcul Mental 🧠</h1>
+    <div id="timer">Temps restant : 60s</div>
+    <div id="quiz"></div>
+    <button onclick="suivant()">Suivant</button>
+    <button onclick="corriger()">Vérifier mes réponses</button>
+    <div id="result"></div>
+    
+    <footer>
+        Bonne chance à tous ! 💪😊
+    </footer>
+    
+    <script>
+        let currentImageKerim = 0;
+        let currentImageNisa = 0;
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.innerText = message;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 1000);
+        }
+
+        function changeImage(carouselId, currentIndex) {
+            const images = document.querySelectorAll(`#${carouselId} img`);
+            images.forEach((img, index) => {
+                img.classList.remove('active');
+                if (index === currentIndex) {
+                    img.classList.add('active');
+                }
+            });
+        }
+
+        function nextImageKerim() {
+            currentImageKerim = (currentImageKerim + 1) % 8;
+            changeImage('kerim-carousel', currentImageKerim);
+        }
+
+        function nextImageNisa() {
+            currentImageNisa = (currentImageNisa + 1) % 8;
+            changeImage('nisa-carousel', currentImageNisa);
+        }
+
+        setInterval(nextImageKerim, 2000);
+        setInterval(nextImageNisa, 2000);
+
+        let timeLeft = 60;
+        function updateTimer() {
+            document.getElementById("timer").innerText = `Temps restant : ${timeLeft}s`;
+            if (timeLeft === 0) {
+                corriger();
+            } else {
+                timeLeft--;
+                if (timeLeft % 10 === 0) {
+                    showNotification(`Il te reste ${timeLeft} secondes !`);
+                }
+                setTimeout(updateTimer, 1000);
+            }
+        }
+        updateTimer();
+
+        const questions = [];
+        for (let i = 1; i <= 50; i++) {
+            let num1 = Math.floor(Math.random() * 20) + 1;
+            let num2 = Math.floor(Math.random() * 20) + 1;
+            let operators = ['+', '-', '*', '/'];
+            let operator = operators[Math.floor(Math.random() * operators.length)];
+            let questionText = `${num1} ${operator} ${num2} =`;
+            let answer;
+            switch (operator) {
+                case '+': answer = num1 + num2; break;
+                case '-': answer = num1 - num2; break;
+                case '*': answer = num1 * num2; break;
+                case '/': answer = parseFloat((num1 / num2).toFixed(2)); break;
+            }
+            questions.push({ q: questionText, a: answer });
+        }
+
+        let currentQuestion = 0;
+        function afficherQuestion() {
+            document.getElementById("quiz").innerHTML = `<div class='question'>${questions[currentQuestion].q} <input type='number' id='q${currentQuestion}'></div>`;
+        }
+
+        function suivant() {
+            currentQuestion++;
+            if (currentQuestion >= questions.length) {
+                currentQuestion = 0;
+            }
+            afficherQuestion();
+        }
+        afficherQuestion();
+
+        function corriger() {
+            let score = 0;
+            questions.forEach((item, index) => {
+                let reponse = document.getElementById(`q${index}`)?.value;
+                if (parseFloat(reponse) === item.a) {
+                    score++;
+                }
+            });
+
+            let appreciation = score === questions.length ? "Excellent ! 🎉😃" : score >= 35 ? "Très bien ! 😊" : score >= 20 ? "Bien joué ! 👍" : "Courage ! Tu vas y arriver ! 💪";
+            document.getElementById("result").innerHTML = `Score : ${score}/${questions.length} <br> ${appreciation}`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Calcul Mental</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+            margin: 0;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
+        .header-text {
+            font-size: 1.2em;
+            animation: marquee 5s linear infinite;
+            white-space: nowrap;
+            display: block;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .question {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+        input {
+            padding: 5px;
+            font-size: 1em;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+        #timer {
+            font-size: 1.5em;
+            color: red;
+            margin-top: 10px;
+        }
+        footer {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .carousel {
+            display: flex;
+            overflow: hidden;
+            width: 300px;
+            margin: 20px auto;
+        }
+        .carousel img {
+            width: 100%;
+            transition: transform 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div>
+            <p>Kerim</p>
+            <div class="carousel" id="kerim-carousel">
+                <img src="kerim1.jpg" alt="Kerim 1">
+                <img src="kerim2.jpg" alt="Kerim 2">
+                <img src="kerim3.jpg" alt="Kerim 3">
+            </div>
+        </div>
+        <div class="header-text" id="header-message">Salut ça va Stupid Boy Stupid Girl !</div>
+        <div>
+            <p>Nisa</p>
+            <div class="carousel" id="nisa-carousel">
+                <img src="nisa1.jpg" alt="Nisa 1">
+                <img src="nisa2.jpg" alt="Nisa 2">
+                <img src="nisa3.jpg" alt="Nisa 3">
+            </div>
+        </div>
+    </header>
+    
+    <h1>Test de Calcul Mental 🧠</h1>
+    <div id="timer">Temps restant : 60s</div>
+    <div id="quiz"></div>
+    <button onclick="suivant()">Suivant</button>
+    <button onclick="corriger()">Vérifier mes réponses</button>
+    <div id="result"></div>
+    
+    <footer>
+        Bonne chance à tous ! 💪😊
+    </footer>
+    
+    <script>
+        setTimeout(() => {
+            document.getElementById("header-message").style.display = "none";
+            document.getElementById("header-message").innerHTML = "Allez courage, le temps passe !";
+        }, 3000);
+        
+        setTimeout(() => {
+            document.getElementById("header-message").style.display = "block";
+        }, 4000);
+
+        let timeLeft = 60;
+        function updateTimer() {
+            document.getElementById("timer").innerText = `Temps restant : ${timeLeft}s`;
+            if (timeLeft === 0) {
+                corriger();
+            } else {
+                timeLeft--;
+                if (timeLeft % 10 === 0) {
+                    alert(`Il te reste ${timeLeft} secondes !`);
+                }
+                setTimeout(updateTimer, 1000);
+            }
+        }
+        updateTimer();
+        
+        const questions = [];
+        for (let i = 1; i <= 50; i++) {
+            let num1 = Math.floor(Math.random() * 20) + 1;
+            let num2 = Math.floor(Math.random() * 20) + 1;
+            let operators = ['+', '-', '*', '/'];
+            let operator = operators[Math.floor(Math.random() * operators.length)];
+            let questionText = `${num1} ${operator} ${num2} =`;
+            let answer;
+            switch (operator) {
+                case '+': answer = num1 + num2; break;
+                case '-': answer = num1 - num2; break;
+                case '*': answer = num1 * num2; break;
+                case '/': answer = parseFloat((num1 / num2).toFixed(2)); break;
+            }
+            questions.push({ q: questionText, a: answer });
+        }
+        
+        let currentQuestion = 0;
+        
+        function afficherQuestion() {
+            const quizDiv = document.getElementById("quiz");
+            quizDiv.innerHTML = `<div class='question'>${questions[currentQuestion].q} <input type='number' id='q${currentQuestion}'></div>`;
+        }
+
+        function suivant() {
+            currentQuestion++;
+            if (currentQuestion >= questions.length) {
+                currentQuestion = 0; // Recommencer à la première question
+            }
+            afficherQuestion();
+        }
+
+        afficherQuestion();
+
+        function corriger() {
+            let score = 0;
+            questions.forEach((item, index) => {
+                let reponse = document.getElementById(`q${index}`).value;
+                if (parseFloat(reponse) === item.a) {
+                    score++;
+                }
+            });
+            
+            let appreciation = "";
+            if (score === questions.length) {
+                appreciation = "Excellent ! 🎉😃";
+            } else if (score >= 35) {
+                appreciation = "Très bien ! 😊";
+            } else if (score >= 20) {
+                appreciation = "Bien joué ! 👍";
+            } else {
+                appreciation = "Courage ! Tu vas y arriver ! 💪";
+            }
+            
+            document.getElementById("result").innerHTML = `Score : ${score}/${questions.length} <br> ${appreciation}`;
+        }
+    </script>
+</body>
+</html>
